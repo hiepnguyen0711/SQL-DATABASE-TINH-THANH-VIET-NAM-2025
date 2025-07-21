@@ -5,6 +5,7 @@ Cơ sở dữ liệu hành chính Việt Nam cập nhật đến năm **2025**, 
 
 - Vùng miền (`mien_vung`)
 - Loại đơn vị hành chính (`loai_don_vi`)
+- Tỉnh thành (`tinh_thanh`)
 - Phường xã (`phuong_xa`)
 
 > 🧠 **Phù hợp với các hệ thống cần xử lý địa chỉ chi tiết đến cấp phường/xã.**
@@ -13,11 +14,12 @@ Cơ sở dữ liệu hành chính Việt Nam cập nhật đến năm **2025**, 
 
 ## 🧱 Cấu trúc cơ sở dữ liệu
 
-| Bảng         | Mô tả                                    |
-|--------------|-------------------------------------------|
-| `mien_vung`  | Danh sách 8 vùng địa lý hành chính        |
-| `loai_don_vi`| Các loại đơn vị như Thành phố, Tỉnh, Xã...|
-| `phuong_xa`  | Dữ liệu đầy đủ các phường/xã toàn quốc    |
+| Bảng           | Mô tả                                    |
+|----------------|-------------------------------------------|
+| `mien_vung`    | Danh sách 8 vùng địa lý hành chính        |
+| `loai_don_vi`  | Các loại đơn vị như Thành phố, Tỉnh, Xã...|
+| `tinh_thanh`   | Danh sách đầy đủ các tỉnh/thành Việt Nam  |
+| `phuong_xa`    | Dữ liệu đầy đủ các phường/xã toàn quốc    |
 
 ---
 
@@ -51,11 +53,10 @@ WHERE province_code = '01';
 <summary><strong>📄 Lấy tên vùng của tỉnh cụ thể</strong></summary>
 
 ```sql
-SELECT mv.name AS ten_vung, ld.full_name AS loai_don_vi
+SELECT mv.name AS ten_vung, tt.full_name AS tinh_thanh
 FROM mien_vung mv
-JOIN phuong_xa px ON px.unit_id = ld.id
-JOIN loai_don_vi ld ON px.unit_id = ld.id
-WHERE px.province_code = '01'
+JOIN tinh_thanh tt ON tt.unit_id = mv.id
+WHERE tt.code = '01'
 LIMIT 1;
 ```
 
@@ -89,6 +90,20 @@ CREATE TABLE loai_don_vi (
   code_name VARCHAR(255),
   code_name_en VARCHAR(255)
 );
+```
+
+### `tinh_thanh`
+
+```sql
+CREATE TABLE tinh_thanh (
+  code VARCHAR(20) NOT NULL,
+  name VARCHAR(255) NOT NULL,
+  name_en VARCHAR(255) DEFAULT NULL,
+  full_name VARCHAR(255) NOT NULL,
+  full_name_en VARCHAR(255) DEFAULT NULL,
+  code_name VARCHAR(255) DEFAULT NULL,
+  unit_id INT(11) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 ```
 
 ### `phuong_xa`
